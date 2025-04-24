@@ -95,7 +95,7 @@ RUN curl -L -o oauthimap-main.zip https://github.com/pluginsGLPI/oauthimap/archi
     && rm oauthimap-main.zip
 
 # PLUGIN GPLI AZURE SSO
-RUN curl -L -o GLPI-Azure-SSO.zip https://github.com/IT/GLPI-Azure-SSO/archive/refs/heads/main.zip \
+RUN curl -L -o GLPI-Azure-SSO.zip https://github.com/DMBIAM/GLPI-Azure-SSO/archive/refs/heads/main.zip \
     && unzip GLPI-Azure-SSO.zip \
     && mv GLPI-Azure-SSO-main singlesignon \
     && rm GLPI-Azure-SSO.zip
