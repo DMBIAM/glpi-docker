@@ -1,0 +1,32 @@
+services:
+  glpi:
+    container_name: glpi_server
+    build: 
+      context: ./glpi
+      dockerfile: Dockerfile
+      args:
+        PHP_VERSION: $PHP_VERSION
+        REPO_GIT: $REPO_GIT
+        REPO_TAG: $REPO_TAG
+    privileged: true
+    ports:
+      - "$PORT_HTTP_HOST:80"
+      - "$PORT_HTTPS_HOST:443"
+    networks:
+      - default
+    dns: 
+      - "8.8.8.8"
+      - "1.1.1.1"
+    command: /usr/sbin/init && systemctl restart php-fpm.service && systemctl restart nginx.service && cd /usr/share/nginx/html 
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "glpi.local:127.0.0.1"
+    hostname: glpi
+    domainname: glpi
+    volumes:
+      - glpi_files:/var/lib/glpi/files
+    mem_limit: $RAM_MAX  
+    mem_reservation: $RAM_RES  
+    cpus: $CPU_MAX
+volumes:
+  glpi_files:

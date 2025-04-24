@@ -1,0 +1,54 @@
+services:
+  db:
+    container_name: glpi_db
+    image: mysql:5.7
+    command: 
+      - --default-authentication-plugin=mysql_native_password
+      - --innodb-buffer-pool-size=1G
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_general_ci
+    environment:
+      MYSQL_DATABASE: $BD_NAME
+      MYSQL_USER: $BD_PASSWORD_USER
+      MYSQL_PASSWORD: $BD_PASSWORD_ROOT
+      MYSQL_ROOT_PASSWORD: $BD_PASSWORD_ROOT 
+    volumes:
+      - ./dump:/docker-entrypoint-initdb.d
+      - glpi_db:/var/lib/mysql
+    ports:
+      - "$PORT_MYSQL:3306"
+    networks:
+      - default
+
+  glpi:
+    container_name: glpi_server
+    depends_on:
+      - db
+    build: 
+      context: ./glpi
+      dockerfile: Dockerfile
+      args:
+        PHP_VERSION: $PHP_VERSION
+        REPO_GIT: $REPO_GIT
+        REPO_TAG: $REPO_TAG
+    privileged: true
+    ports:
+      - "$PORT_HTTP_HOST:80"
+      - "$PORT_HTTPS_HOST:443"
+    networks:
+      - default
+    dns: 
+      - "8.8.8.8"
+      - "1.1.1.1"
+    command: /usr/sbin/init && systemctl restart php-fpm.service && systemctl restart nginx.service && cd /usr/share/nginx/html 
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "glpi.local:127.0.0.1"
+    hostname: glpi
+    domainname: glpi
+    volumes:
+      - glpi_files:/var/lib/glpi/files
+  
+volumes:
+  glpi_db:
+  glpi_files:

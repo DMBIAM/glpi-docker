@@ -1,0 +1,24 @@
+services:
+  db:
+    container_name: mysql_db
+    image: mysql:8.0
+    command: 
+      - --default-authentication-plugin=mysql_native_password
+      - --innodb-buffer-pool-size=1G
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_general_ci
+    environment:
+      MYSQL_DATABASE: $BD_NAME
+      MYSQL_USER: $BD_PASSWORD_USER
+      MYSQL_PASSWORD: $BD_PASSWORD_ROOT
+      MYSQL_ROOT_PASSWORD: $BD_PASSWORD_ROOT 
+    volumes:
+      - ./dump:/docker-entrypoint-initdb.d
+      - mysql_db:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - default
+
+volumes:
+  mysql_db:
